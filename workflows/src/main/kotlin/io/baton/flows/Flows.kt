@@ -112,13 +112,36 @@ class SendChat(private val to: Party, private val message: String) : FlowLogic<U
 @InitiatingFlow
 @StartableByRPC
 class SendFile(private val to: Party, private val attachment: String) : FlowLogic<Unit>() {
-    override val progressTracker = ProgressTracker(object : ProgressTracker.Step("Sending") {})
+
+    companion object {
+        object GENERATING_TRANSACTION : ProgressTracker.Step("Generating transaction based on new IOU.")
+        object VERIFYING_TRANSACTION : ProgressTracker.Step("Verifying contract constraints.")
+        object SIGNING_TRANSACTION : ProgressTracker.Step("Signing transaction with our private key.")
+        object GATHERING_SIGS : ProgressTracker.Step("Gathering the counterparty's signature.") {
+            override fun childProgressTracker() = CollectSignaturesFlow.tracker()
+        }
+
+        object FINALISING_TRANSACTION : ProgressTracker.Step("Obtaining notary signature and recording transaction.") {
+            override fun childProgressTracker() = FinalityFlow.tracker()
+        }
+
+        fun tracker() = ProgressTracker(
+                GENERATING_TRANSACTION,
+                VERIFYING_TRANSACTION,
+                SIGNING_TRANSACTION,
+                GATHERING_SIGS,
+                FINALISING_TRANSACTION
+        )
+    }
+
+    override val progressTracker = tracker()
 
     @Suspendable
     override fun call() {
         val stx: SignedTransaction = createAttachmentStx()
+        val otherPartySession = initiateFlow(to)
         progressTracker.nextStep()
-        subFlow(FinalityFlow(stx, emptyList()))
+        subFlow(FinalityFlow(stx, setOf(otherPartySession), FINALISING_TRANSACTION.childProgressTracker()))
     }
 
     private fun createAttachmentStx(): SignedTransaction {
@@ -134,6 +157,22 @@ class SendFile(private val to: Party, private val attachment: String) : FlowLogi
         txb.addOutputState(Chat.Attachment(UniqueIdentifier(), attachment, to, me, sent, delivered, fromMe, formatted), Chat::class.qualifiedName!!)
         txb.addCommand(Chat.SendFileCommand, me.owningKey)
         return serviceHub.signInitialTransaction(txb)
+    }
+
+    @InitiatedBy(SendFile::class)
+    class SendFileResponder(val otherPartySession: FlowSession) : FlowLogic<SignedTransaction>() {
+        @Suspendable
+        override fun call(): SignedTransaction {
+            val signTransactionFlow = object : SignTransactionFlow(otherPartySession) {
+                override fun checkTransaction(stx: SignedTransaction) = requireThat {
+                    val output = stx.tx.outputs.single().data
+
+                }
+            }
+
+            val signedTransaction = subFlow(signTransactionFlow)
+            return subFlow(ReceiveFinalityFlow(otherSideSession = otherPartySession, expectedTxId = signedTransaction.id))
+        }
     }
 
 }
