@@ -302,6 +302,15 @@
     $scope.showAlert = false;
     $scope.showActivate = false;
     $scope.showChat = false;
+    $scope.showPayment = false;
+
+
+    $scope.showPaymentFn = function(sendType,methodName){
+    $scope.showPayment = true;
+    lastSendType = sendType;
+    lastMethodName = methodName;
+
+    }
 
 
     $scope.showAlertFn = function(sendType,methodName){
@@ -647,6 +656,20 @@
             </p>
         </div>
         <div class="slds-page-header__control">
+            <ul class="slds-button-group-row">
+                <li class="slds-button-group-item">
+                    <button class="slds-button slds-button_neutral" ng-click="showPaymentFn('Transfer')">Send</button>
+                </li>
+                <li class="slds-button-group-item">
+                    <button class="slds-button slds-button_neutral" ng-click="showRequestFn('Transfer')">Request</button>
+                </li>
+                <li class="slds-button-group-item">
+                    <button class="slds-button slds-button_neutral" ng-click="showRequestFn('Transfer')">Link</button>
+                </li>
+                <li class="slds-button-group-item">
+                    <button class="slds-button slds-button_neutral" ng-click="showRequestFn('Transfer')">Respond to Collect Request</button>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
@@ -842,5 +865,72 @@
         </div>
     </section>
 </div>
+
+
+<!--Signer Modal -->
+<div class="demo-only" style="min-height:640px;margin-top: 0px !important;" ng-show="showPayment">
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_medium">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" ng-click="hidePayment()">
+                    <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                    </svg>
+                    <span class="slds-assistive-text" >Close</span>
+                </button>
+                <table>
+                    <tr>
+                        <td style="max-width: 17px;">
+                    <span class="slds-icon_container slds-icon-custom-custom5" title="Description of icon when needed">
+                      <svg class="slds-icon slds-icon_large" aria-hidden="true">
+                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#money"></use>
+                      </svg>
+                      <span class="slds-assistive-text">Description of icon</span>
+                    </span>
+                        </td>
+                        <td>
+                            <h2 id="modal-heading-01" style="padding-left:17px" class="slds-text-heading_small slds-hyphenate">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;New Payment</h2>
+                            <p class="slds-text-body_small slds-line-height_reset" style="padding-left:17px">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Create a New Payment
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
+            </header>
+            <form style="padding-left:8px; padding-right:8px; padding-top:28px; padding-bottom:28px" class="slds-card" name="account wizard">
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label">Payee VPA: </label>
+                    <input type="text" name="firstName" class="slds-input slds-combobox__input" ng-model="payee" />
+                </div>
+
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label">Payment Amount: </label>
+                    <input type="text" name="firstName" class="slds-input slds-combobox__input" ng-model="paymentAmount" />
+                </div>
+
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label">Payment Description: </label>
+                    <input type="text" name="firstName" class="slds-input slds-combobox__input" ng-model="description" />
+                </div>
+
+
+                <br/>
+
+            </form>
+
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" ng-click="hidePayment()">Cancel</button>
+                <button  class="slds-button slds-button--brand" ng-click="sendPayment()">Send</button>
+                <img src="https://i.stack.imgur.com/pK4a5.gif" style="width:30px;" ng-show="showTransferSpinner"/>
+                {{showMessage}}
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</div>
+
+
+
 </body>
 </html>
