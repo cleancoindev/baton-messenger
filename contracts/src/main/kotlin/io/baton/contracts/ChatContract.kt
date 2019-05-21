@@ -34,7 +34,6 @@ class Chat : Contract {
                        val deliveredReceipt: Boolean?,
                        val fromMe: Boolean?,
                        val time: String?,
-            // val batonId: String,
                        override val participants: List<AbstractParty> = listOf(to, from)) : ContractState
 
     object SendChatCommand : TypeOnlyCommandData()

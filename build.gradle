@@ -17,7 +17,8 @@ buildscript {
         mavenLocal()
         mavenCentral()
         jcenter()
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda' }    
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda' }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-solutions-releases' }
     }
 
     dependencies {
@@ -85,8 +86,8 @@ dependencies {
 
 cordapp {
     info {
-        name "CorDapp Template"
-        vendor "Corda Open Source"
+        name "Baton Messenger"
+        vendor "Dapps Incorporated"
         targetPlatformVersion corda_platform_version.toInteger()
         minimumPlatformVersion corda_platform_version.toInteger()
     }
