@@ -16,9 +16,22 @@ dependencies {
     compile project(":contracts")
     compile project(":workflows")
 
+
+    // Spring Boot
     compile("org.springframework.boot:spring-boot-starter-websocket:$spring_boot_version") {
         exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
     }
+
+    // Spring Security
+    compile("org.springframework.boot:spring-boot-starter-security") {
+        exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+    }
+
+    // Spring Data
+    compile("org.springframework.boot:spring-boot-starter-data-jpa") {
+        exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+    }
+
 
     compile "org.apache.logging.log4j:log4j-slf4j-impl:${log4j_version}"
     compile "org.apache.logging.log4j:log4j-web:${log4j_version}"

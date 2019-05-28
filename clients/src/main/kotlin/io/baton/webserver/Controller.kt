@@ -21,6 +21,8 @@ import io.baton.SendChat
 import io.baton.SendPaymentFlow
 import io.baton.SendPolicyFlow
 import io.baton.contracts.Chat
+import io.baton.user.User
+import io.baton.user.UserRepository
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.StateAndRef
 import net.corda.core.contracts.TransactionVerificationException
@@ -51,9 +53,11 @@ import org.springframework.web.bind.annotation.PostMapping
 @RestController
 @RequestMapping("/api")
 class RestController(
-        private val rpc: NodeRPCConnection) {
+        private val rpc: NodeRPCConnection,
+        val repository: UserRepository) {
 
 
+    val authorization = SecurityContextHolder.getContext().authentication
 
     companion object {
         private val logger = LoggerFactory.getLogger(RestController::class.java)
@@ -118,6 +122,36 @@ class RestController(
 
     @GetMapping(value = "/flows", produces = arrayOf("text/plain"))
     private fun flows() = proxy.registeredFlows().toString()
+
+    /** Find All Users. */
+    @GetMapping
+    fun findAll() = repository.findAll()
+
+
+    /** Add a new User */
+
+    @PostMapping
+    fun addUser(@RequestBody user: User) = repository.save(user)
+
+
+    /** Update a User */
+
+    @PutMapping(value = "/{id}")
+    fun updateUser(@PathVariable id: Long, @RequestBody user: User) {
+        assert(user.id == id)
+        repository.save(user)
+    }
+
+    /** Remove User */
+
+    @DeleteMapping(value = "/{id}")
+    fun removeUser(@PathVariable id: Long) = repository.deleteById(id)
+
+
+    /** Get User by Id */
+
+    @GetMapping(value = "/{id}")
+    fun getById(@PathVariable id: Long) = repository.findById(id)
 
 
     private val proxy = rpc.proxy
