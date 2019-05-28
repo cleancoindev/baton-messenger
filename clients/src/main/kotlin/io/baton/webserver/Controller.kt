@@ -19,6 +19,7 @@ package io.baton.webserver
 
 import io.baton.SendChat
 import io.baton.SendPaymentFlow
+import io.baton.SendPolicyFlow
 import io.baton.contracts.Chat
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.StateAndRef
@@ -44,7 +45,7 @@ import javax.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.PostMapping
 
 /**
- * Adappt API Endpoints
+ * Baton Messenger API Endpoints
  */
 
 @RestController
@@ -238,5 +239,46 @@ class RestController(
         logger.info(message)
         return ResponseEntity<Any?>(message, status)
     }
-}
 
+
+/** Send Proxy Re-encryption Policy */
+
+
+@PostMapping(value = "/policy")
+fun sendPayment(@RequestParam("alice") alice: String,
+                @RequestParam("enrico") enrico: String,
+                @RequestParam("bob") bob: String,
+                @RequestParam("policyName") policyName: String,
+                @RequestParam("policyExpirationDate") policyExpirationDate: String,
+                @RequestParam("policyPassword") policyPassword: String,
+                @RequestParam("policyId") policyId: String): ResponseEntity<Any?> {
+
+    if (policyId == null) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Query parameter 'tid' can not be null.\n")
+    }
+
+    if (bob == null) {
+        return ResponseEntity.status(TSResponse.BAD_REQUEST).body("Query parameter 'pn' missing or has wrong format.\n")
+    }
+
+    val counterparty = CordaX500Name.parse(bob)
+
+    val bob = proxy.wellKnownPartyFromX500Name(counterparty)
+            ?: return ResponseEntity.status(TSResponse.BAD_REQUEST).body("Party named $bob cannot be found.\n")
+
+    val (status, message) = try {
+
+
+        val flowHandle = proxy.startFlowDynamic(SendPolicyFlow.InitiatePolicyRequest::class.java, alice, enrico, bob, policyName, policyExpirationDate, policyPassword, policyId)
+
+        val result = flowHandle.use { it.returnValue.getOrThrow() }
+
+        HttpStatus.CREATED to "Payment sent."
+
+    } catch (e: Exception) {
+        HttpStatus.BAD_REQUEST to e.message
+    }
+    io.baton.webserver.RestController.logger.info(message)
+    return ResponseEntity<Any?>(message, status)
+}
+}

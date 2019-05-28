@@ -18,8 +18,10 @@ package io.baton
 
 import co.paralleluniverse.fibers.Suspendable
 import io.baton.contracts.Chat
+import io.baton.contracts.PolicyContract.Companion.POLICY_CONTRACT_ID
 import io.baton.contracts.UPIContract
 import io.baton.contracts.UPIContract.Companion.UPI_CONTRACT_ID
+import io.baton.states.Policy
 import io.baton.states.UPI
 import net.corda.core.contracts.Command
 import net.corda.core.contracts.Requirements.using
@@ -253,6 +255,89 @@ object SendPaymentFlow {
                     val output = stx.tx.outputs.single().data
                     "This must be a UPI transaction." using (output is UPI)
                     val upi = output as UPI
+                }
+            }
+
+            return subFlow(signTransactionFlow)
+        }
+    }
+}
+
+
+
+
+object SendPolicyFlow {
+    @StartableByRPC
+    @InitiatingFlow
+    @Suspendable
+    class InitiatePolicyRequest(private val alice: Party,
+                                private val enrico: Party,
+                                private val bob: Party,
+                                private val policyName: String,
+                                private val policyExpirationDate: String,
+                                private val policyPassword: String,
+                                private val policyId: String) : FlowLogic<SignedTransaction>() {
+
+        companion object {
+            object GENERATING_TRANSACTION : ProgressTracker.Step("Generating transaction based on new Agreement.")
+            object VERIFYING_TRANSACTION : ProgressTracker.Step("Verifying contract constraints.")
+            object SIGNING_TRANSACTION : ProgressTracker.Step("Signing transaction with our private key.")
+            object GATHERING_SIGS : ProgressTracker.Step("Gathering the counterparty signature.") {
+                override fun childProgressTracker() = CollectSignaturesFlow.tracker()
+            }
+
+            object FINALISING_TRANSACTION : ProgressTracker.Step("Obtaining notary signature and recording transaction.") {
+                override fun childProgressTracker() = FinalityFlow.tracker()
+            }
+
+            fun tracker() = ProgressTracker(
+                    GENERATING_TRANSACTION,
+                    VERIFYING_TRANSACTION,
+                    SIGNING_TRANSACTION,
+                    GATHERING_SIGS,
+                    FINALISING_TRANSACTION
+            )
+        }
+
+        override val progressTracker = tracker()
+
+
+        @Suspendable
+        override fun call(): SignedTransaction {
+            // Obtain a reference to the notary we want to use.
+            val notary = serviceHub.networkMapCache.notaryIdentities[0]
+            progressTracker.currentStep = GENERATING_TRANSACTION
+
+            // Generate an unsigned transaction.
+            val policyState = Policy(alice, enrico, bob, policyName, policyExpirationDate, policyPassword, policyId)
+            val txCommand = Command(UPIContract.Commands.SendPayment(), policyState.participants.map { it.owningKey })
+            progressTracker.currentStep = VERIFYING_TRANSACTION
+            val txBuilder = TransactionBuilder(notary)
+                    .addOutputState(policyState, POLICY_CONTRACT_ID)
+                    .addCommand(txCommand)
+
+            txBuilder.verify(serviceHub)
+            // Sign the transaction.
+            progressTracker.currentStep = SIGNING_TRANSACTION
+            val partSignedTx = serviceHub.signInitialTransaction(txBuilder)
+
+
+            progressTracker.currentStep = GATHERING_SIGS
+            val otherPartyFlow = initiateFlow(bob)
+            val fullySignedTx = subFlow(CollectSignaturesFlow(partSignedTx, setOf(otherPartyFlow), GATHERING_SIGS.childProgressTracker()))
+            return subFlow(FinalityFlow(fullySignedTx, FINALISING_TRANSACTION.childProgressTracker()))
+        }
+    }
+
+    @InitiatedBy(InitiatePolicyRequest::class)
+    class AcceptPolicyRequest(val otherPartyFlow: FlowSession) : FlowLogic<SignedTransaction>() {
+        @Suspendable
+        override fun call(): SignedTransaction {
+            val signTransactionFlow = object : SignTransactionFlow(otherPartyFlow) {
+                override fun checkTransaction(stx: SignedTransaction) = requireThat {
+                    val output = stx.tx.outputs.single().data
+                    "This must be a UPI transaction." using (output is Policy)
+                    val policy = output as Policy
                 }
             }
 
