@@ -42,6 +42,7 @@ buildscript {
         classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_gradle_plugin_version"
 
+
         // spring plugins
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
         classpath "io.spring.gradle:dependency-management-plugin:$dependency_management_version"
@@ -98,6 +99,10 @@ dependencies {
     // CorDapp dependencies.
     cordapp project(":workflows")
     cordapp project(":contracts")
+
+    // BNMS
+    cordapp "com.r3.businessnetworks:membership-service:2.0"
+    cordapp "com.r3.businessnetworks:membership-service-contracts-and-states:2.0"
 
     cordaCompile "org.apache.logging.log4j:log4j-slf4j-impl:${log4j_version}"
     cordaCompile "org.apache.logging.log4j:log4j-web:${log4j_version}"
