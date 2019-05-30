@@ -52,6 +52,7 @@ dependencies {
     // Same as above for testing as well
     testCompile "com.github.manosbatsis.corbeans:corbeans-spring-boot-starter-test:$corbeans_version"
 
+
     // Add support for RESTful errors
     compile ("com.github.manosbatsis.scrudbeans:scrudbeans-error:$scrudbeans_version")
 
