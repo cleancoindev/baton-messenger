@@ -166,7 +166,7 @@ class RestController(
     /** Update a User */
 
     @PutMapping(value = "/{id}")
-    fun updateUser(@PathVariable userId: Long, @RequestBody user: User) {
+    fun updateUser(@PathVariable userId: String, @RequestBody user: User) {
         assert(user.userId == userId)
         repository.save(user)
     }
@@ -190,8 +190,9 @@ class RestController(
 
 
     @GetMapping(value = "/getMessages", produces = arrayOf("application/json"))
-    fun getMessages(): List<Map<String, String>> {
-        val messageStateAndRefs = rpc.proxy.vaultQueryBy<Chat.Message>().states
+    @ApiOperation(value = "Get Baton Messages")
+    fun getMessages(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
+        val messageStateAndRefs = this.getService(nodeName).proxy().vaultQueryBy<Chat.Message>().states
         val messageStates = messageStateAndRefs.map { it.state.data }
         return messageStates.map { it.toJson() }
     }
@@ -201,8 +202,9 @@ class RestController(
 
 
     @GetMapping(value = "/getReceivedMessages", produces = arrayOf("application/json"))
-    fun getRecievedMessages(): List<Map<String, String>> {
-        val messageStateAndRefs = rpc.proxy.vaultQueryBy<Chat.Message>().states
+    @ApiOperation(value = "Get Received Baton Messages")
+    fun getRecievedMessages(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
+        val messageStateAndRefs = this.getService(nodeName).proxy().vaultQueryBy<Chat.Message>().states
         val messageStates = messageStateAndRefs.map { it.state.data }
         return messageStates.map { it.toJson() }
     }
@@ -211,8 +213,9 @@ class RestController(
 
 
     @GetMapping(value = "/getSentMessages", produces = arrayOf("application/json"))
-    fun getSentMessages(): List<Map<String, String>> {
-        val messageStateAndRefs = rpc.proxy.vaultQueryBy<Chat.Message>().states
+    @ApiOperation(value = "Get Sent Baton Messages")
+    fun getSentMessages(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
+        val messageStateAndRefs = this.getService(nodeName).proxy().vaultQueryBy<Chat.Message>().states
         val messageStates = messageStateAndRefs.map { it.state.data }
         return messageStates.map { it.toJson() }
     }
