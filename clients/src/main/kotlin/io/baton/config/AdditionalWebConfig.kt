@@ -14,7 +14,7 @@ class AdditionalWebConfig {
      *
      */
     @Bean
-    fun corsFilter(): FilterRegistrationBean {
+    fun corsFilter(): FilterRegistrationBean<CorsFilter> {
         val source = UrlBasedCorsConfigurationSource()
         val config = CorsConfiguration()
         config.allowCredentials = true

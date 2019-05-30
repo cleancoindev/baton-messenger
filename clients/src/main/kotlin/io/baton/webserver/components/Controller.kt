@@ -310,7 +310,7 @@ class RestController(
 
 
 @PostMapping(value = "/policy")
-fun sendPayment(@RequestParam("alice") alice: String,
+fun sendPolicy(@RequestParam("alice") alice: String,
                 @RequestParam("enrico") enrico: String,
                 @RequestParam("bob") bob: String,
                 @RequestParam("policyName") policyName: String,
