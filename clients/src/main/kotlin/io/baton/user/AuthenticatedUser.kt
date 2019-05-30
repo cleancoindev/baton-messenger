@@ -11,14 +11,6 @@ class AuthenticatedUser(user: User) : User(user), UserDetails {
         return AuthorityUtils.createAuthorityList("USER")
     }
 
-    override fun getUsername(): String {
-        return username
-    }
-
-    override fun getPassword(): String {
-        return password
-    }
-
     override fun isAccountNonExpired(): Boolean {
         return true
     }

@@ -1,7 +1,5 @@
 package io.baton.config
 
-package com.github.manosbatsis.corbeans.corda.webserver.config
-
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import springfox.documentation.builders.ApiInfoBuilder
@@ -36,8 +34,8 @@ class SwaggerConfig {
     }
 
     protected fun apiInfo(): ApiInfo {
-        return ApiInfoBuilder().title("Corbeans Yo!")
-                .description("A rest API for Yo! cordapp nodes using Spring Boot 2").version("0.1").build()
+        return ApiInfoBuilder().title("Baton Messenger")
+                .description("A rest API for baton messenger cordapp nodes using Spring Boot 2").version("0.1").build()
     }
 
 }

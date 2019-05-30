@@ -1,6 +1,5 @@
 package io.baton.user
 
-import io.baton.user.*
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -18,7 +17,4 @@ open class UserDetailsServiceImpl(val userRepository: UserRepository) : UserDeta
         return User(user.username, user.password, emptyList())
     }
 
-    fun save(user: User) {
-        userRepository.save(user)
-    }
 }
