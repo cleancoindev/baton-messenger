@@ -239,7 +239,6 @@ class RestController(
 
         val (status, message) = try {
 
-
             val result = getService(nodeName).sendChat(to, message)
 
             HttpStatus.CREATED to mapOf<String, String>(
