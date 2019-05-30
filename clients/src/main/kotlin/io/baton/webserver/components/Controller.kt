@@ -166,21 +166,21 @@ class RestController(
     /** Update a User */
 
     @PutMapping(value = "/{id}")
-    fun updateUser(@PathVariable id: Long, @RequestBody user: User) {
-        assert(user.id == id)
+    fun updateUser(@PathVariable userId: Long, @RequestBody user: User) {
+        assert(user.userId == userId)
         repository.save(user)
     }
 
     /** Remove User */
 
     @DeleteMapping(value = "/{id}")
-    fun removeUser(@PathVariable id: Long) = repository.deleteById(id)
+    fun removeUser(@PathVariable userId: String) = repository.deleteById(userId)
 
 
     /** Get User by Id */
 
     @GetMapping(value = "/{id}")
-    fun getById(@PathVariable id: Long) = repository.findById(id)
+    fun getById(@PathVariable userId:String) = repository.findById(userId)
 
 
     private val proxy = rpc.proxy
@@ -224,7 +224,7 @@ class RestController(
 
     @PostMapping(value = "/sendChat")
     @ApiOperation(value = "Send a message to the target party")
-    fun sendChat(@PathVariable nodename: Optional<String>,
+    fun sendChat(@PathVariable nodeName: Optional<String>,
                  @ApiParam(value = "The target party for the message")
                  @RequestParam(required = true) to: String,
                  @RequestParam("message") message: String): ResponseEntity<Any?> {
@@ -237,33 +237,22 @@ class RestController(
             return ResponseEntity.status(TSResponse.BAD_REQUEST).body("Query parameter 'recipient' missing or has wrong format.\n")
         }
 
-        val counterparty = CordaX500Name.parse(to)
-
-
-        val to = proxy.wellKnownPartyFromX500Name(counterparty)
-                ?: return ResponseEntity.status(TSResponse.BAD_REQUEST).body("Party named $to cannot be found.\n")
-
         val (status, message) = try {
 
 
-            val result = getService(nodeName).sendChat(target)
+            val result = getService(nodeName).sendChat(to, message)
 
-        //    val flowHandle = proxy.startFlowDynamic(SendChat::class.java, to, message)
-
-        //    val result = flowHandle.use { it.returnValue.getOrThrow() }
-
-            HttpStatus.CREATED to mapOf(String, String>(
+            HttpStatus.CREATED to mapOf<String, String>(
                     "message" to "$message",
-                    "target" to "$target",
+                    "to" to "$to",
                     "transactionId" to "${result.tx.id}"
                     )
 
         } catch (e: Exception) {
-            logger.error("Error sending message to ${target}", e)
+            logger.error("Error sending message to ${to}", e)
             e.printStackTrace()
             HttpStatus.BAD_REQUEST to e.message
         }
-        logger.info(message)
         return ResponseEntity<Any?>(message, status)
     }
 
