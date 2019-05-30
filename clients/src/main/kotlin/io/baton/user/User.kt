@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue
 @Entity
 class User(
         @Id @GeneratedValue(strategy = GenerationType.AUTO)
-        var userId: Long = 0,
+        var userId: String = "",
         var orgId: String = "",
         var username: String = "",
         var password: String = "",

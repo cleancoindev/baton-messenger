@@ -23,12 +23,9 @@ import io.baton.user.UserRepository
 class UserDao(
         private val userRepository: UserRepository
 ) {
-    fun getUserById(id: String) =
-            userRepository.findById(id)
+    fun getUserById(userId: String) =
+            userRepository.findById(userId)
 
-    fun getUsersByName(name: String) =
-            userRepository.findByNameLike(name)
-
-    fun createUser(name: String) =
-            userRepository.save(User(name = name))
+    fun createUser(userId: String) =
+            userRepository.save(User(userId = userId))
 }
