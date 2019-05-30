@@ -8,10 +8,24 @@ buildscript {
         quasar_version = '0.7.10'
         spring_boot_version = '2.0.2.RELEASE'
         spring_boot_gradle_plugin_version = '2.0.2.RELEASE'
+        hibernate_version = '5.3.6.Final'
+        dependency_management_version ='1.0.6.RELEASE'
         slf4j_version = '1.7.25'
         log4j_version = '2.11.2'
         corda_platform_version = '4'
+        jackson_version = '2.9.5'
+        artemis_version = "2.6.2"
+        corbeans_version = '0.19-SNAPSHOT'
+        scrudbeans_version = '0.6'
+        spring_boot_version = '2.1.1.RELEASE'
+        springfox_version = '2.9.2'
     }
+
+    // Customise dependency versions for spring-boot-dependencies
+    ext['artemis.version'] = "$artemis_version"
+    ext['hibernate.version'] = "$hibernate_version"
+    ext['jackson.version'] = "$jackson_version"
+
 
     repositories {
         mavenLocal()
@@ -27,11 +41,17 @@ buildscript {
         classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_gradle_plugin_version"
+
+        // spring plugins
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
+        classpath "io.spring.gradle:dependency-management-plugin:$dependency_management_version"
+
     }
 }
 
 allprojects {
     apply plugin: 'kotlin'
+    apply plugin: 'idea'
 
     repositories {
         mavenLocal()
@@ -129,6 +149,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
     }
 }
+
 
 task installQuasar(type: Copy) {
     destinationDir rootProject.file("lib")

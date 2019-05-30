@@ -1,4 +1,4 @@
-package io.baton.webserver
+package io.baton.webserver.components
 
 import org.springframework.boot.Banner
 import org.springframework.boot.SpringApplication

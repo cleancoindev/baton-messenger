@@ -15,7 +15,7 @@
  */
 
 
-package io.baton.webserver
+package io.baton.webserver.components
 
 import io.baton.SendChat
 import io.baton.SendPaymentFlow
@@ -25,13 +25,11 @@ import io.baton.user.User
 import io.baton.user.UserRepository
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.StateAndRef
-import net.corda.core.contracts.TransactionVerificationException
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.messaging.vaultQueryBy
 import net.corda.core.node.ServiceHub
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.queryBy
-import net.corda.core.node.services.vault.Builder.equal
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.builder
 import net.corda.core.utilities.getOrThrow
@@ -43,8 +41,13 @@ import org.springframework.web.bind.annotation.RestController
 import sun.security.timestamp.TSResponse
 import java.time.LocalDateTime
 import java.time.ZoneId
-import javax.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.PostMapping
+import com.github.manosbatsis.corbeans.spring.boot.corda.config.NodeParams
+import io.baton.webserver.NodeRPCConnection
+import io.swagger.annotations.Api
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
+import org.springframework.beans.factory.annotation.Autowired
 
 /**
  * Baton Messenger API Endpoints
@@ -61,6 +64,29 @@ class RestController(
 
     companion object {
         private val logger = LoggerFactory.getLogger(RestController::class.java)
+    }
+
+
+    protected lateinit var defaultNodeName: String
+
+    @Autowired
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+    protected lateinit var services: Map<String, BatonService>
+
+    @PostConstruct
+    fun postConstruct() {
+        // if single node config, use the only node name as default, else reserve explicitly for cordform
+        defaultNodeName = if (services.keys.size == 1) services.keys.first() else NodeParams.NODENAME_CORDFORM
+        logger.debug("Auto-configured RESTful services for Corda nodes:: {}, default node: {}", services.keys, defaultNodeName)
+    }
+
+    /**
+     * Handle both "api/sendChat" and "api/sendChat/{nodeName}" by using `cordform` as the default
+     * node name to support optional dedicated webserver per node when using `runnodes`.
+     */
+    fun getService(optionalNodeName: Optional<String>): BatonService {
+        val nodeName = if (optionalNodeName.isPresent) optionalNodeName.get() else defaultNodeName
+        return this.services.get("${nodeName}NodeService") ?: throw IllegalArgumentException("Node not found: $nodeName")
     }
 
 
@@ -194,7 +220,10 @@ class RestController(
 
 
     @PostMapping(value = "/sendChat")
-    fun sendChat(@RequestParam("to") to: String,
+    @ApiOperation(value = "Send a message to the target party")
+    fun sendChat(@PathVariable nodename: Optional<String>,
+                 @ApiParam(value = "The target party for the message")
+                 @RequestParam(required = true) to: String,
                  @RequestParam("message") message: String): ResponseEntity<Any?> {
 
         if (message == null) {
@@ -214,13 +243,21 @@ class RestController(
         val (status, message) = try {
 
 
-            val flowHandle = proxy.startFlowDynamic(SendChat::class.java, to, message)
+            val result = getService(nodeName).sendChat(target)
 
-            val result = flowHandle.use { it.returnValue.getOrThrow() }
+        //    val flowHandle = proxy.startFlowDynamic(SendChat::class.java, to, message)
 
-            HttpStatus.CREATED to "Message sent."
+        //    val result = flowHandle.use { it.returnValue.getOrThrow() }
+
+            HttpStatus.CREATED to mapOf(String, String>(
+                    "message" to "$message",
+                    "target" to "$target",
+                    "transactionId" to "${result.tx.id}"
+                    )
 
         } catch (e: Exception) {
+            logger.error("Error sending message to ${target}", e)
+            e.printStackTrace()
             HttpStatus.BAD_REQUEST to e.message
         }
         logger.info(message)
@@ -312,7 +349,7 @@ fun sendPayment(@RequestParam("alice") alice: String,
     } catch (e: Exception) {
         HttpStatus.BAD_REQUEST to e.message
     }
-    io.baton.webserver.RestController.logger.info(message)
+    logger.info(message)
     return ResponseEntity<Any?>(message, status)
 }
 }
