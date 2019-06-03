@@ -81,7 +81,7 @@ dependencies {
 
 springBoot {
     buildInfo()
-    mainClassName = "io.baton.webserver.Application"
+    mainClassName = "io.baton.server.Application"
 }
 
 jar {

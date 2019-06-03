@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package io.baton.webserver.components
+package io.baton.server.components
 
 import org.springframework.boot.Banner
 import org.springframework.boot.SpringApplication

@@ -1,10 +1,9 @@
-package io.baton.webserver.components
+package io.baton.server.components
 
 import com.github.manosbatsis.corbeans.spring.boot.corda.rpc.NodeRpcConnection
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNodeServiceImpl
 import io.baton.SendChat
 import net.corda.core.identity.Party
-import net.corda.core.transactions.SignedTransaction
 import net.corda.core.utilities.getOrThrow
 import org.slf4j.LoggerFactory
 

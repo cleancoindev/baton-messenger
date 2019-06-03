@@ -15,35 +15,27 @@
  */
 
 
-package io.baton.webserver.components
+package io.baton.server.components
 
-import io.baton.SendChat
-import io.baton.SendPaymentFlow
-import io.baton.SendPolicyFlow
 import io.baton.contracts.Chat
 import io.baton.user.User
 import io.baton.user.UserRepository
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.StateAndRef
-import net.corda.core.identity.CordaX500Name
 import net.corda.core.messaging.vaultQueryBy
 import net.corda.core.node.ServiceHub
 import net.corda.core.node.services.Vault
 import net.corda.core.node.services.queryBy
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.node.services.vault.builder
-import net.corda.core.utilities.getOrThrow
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.bind.annotation.RestController
 import sun.security.timestamp.TSResponse
-import java.time.LocalDateTime
-import java.time.ZoneId
 import org.springframework.web.bind.annotation.PostMapping
 import com.github.manosbatsis.corbeans.spring.boot.corda.config.NodeParams
-import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
 import org.springframework.beans.factory.annotation.Autowired
@@ -83,7 +75,7 @@ class RestController(
 
     /**
      * Handle both "api/sendChat" and "api/sendChat/{nodeName}" by using `cordform` as the default
-     * node name to support optional dedicated webserver per node when using `runnodes`.
+     * node name to support optional dedicated server per node when using `runnodes`.
      */
     fun getService(optionalNodeName: Optional<String>): BatonService {
         val nodeName = if (optionalNodeName.isPresent) optionalNodeName.get() else defaultNodeName
