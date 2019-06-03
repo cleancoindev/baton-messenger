@@ -43,7 +43,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import org.springframework.web.bind.annotation.PostMapping
 import com.github.manosbatsis.corbeans.spring.boot.corda.config.NodeParams
-import io.baton.webserver.NodeRPCConnection
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
@@ -59,7 +58,6 @@ import javax.annotation.PostConstruct
 @RestController
 @RequestMapping("/api")
 class RestController(
-        private val rpc: NodeRPCConnection,
         val repository: UserRepository) {
 
 
@@ -93,8 +91,6 @@ class RestController(
     }
 
 
-    private val me = rpc.proxy.nodeInfo().legalIdentities.first().name
-
     private inline fun <reified U : ContractState> getState(
             services: ServiceHub,
             block: (generalCriteria: QueryCriteria.VaultQueryCriteria) -> QueryCriteria
@@ -121,36 +117,6 @@ class RestController(
                 "fromMe" to fromMe.toString(),
                 "time" to time.toString())
     }
-
-
-
-    /** Returns the node's name. */
-    @GetMapping(value = "/me", produces = arrayOf("text/plain"))
-    private fun me() = me.toString()
-
-    @GetMapping(value = "/status", produces = arrayOf("text/plain"))
-    private fun status() = "200"
-
-    @GetMapping(value = "/servertime", produces = arrayOf("text/plain"))
-    private fun serverTime() = LocalDateTime.ofInstant(proxy.currentNodeTime(), ZoneId.of("UTC")).toString()
-
-    @GetMapping(value = "/addresses", produces = arrayOf("text/plain"))
-    private fun addresses() = proxy.nodeInfo().addresses.toString()
-
-    @GetMapping(value = "/identities", produces = arrayOf("text/plain"))
-    private fun identities() = proxy.nodeInfo().legalIdentities.toString()
-
-    @GetMapping(value = "/platformversion", produces = arrayOf("text/plain"))
-    private fun platformVersion() = proxy.nodeInfo().platformVersion.toString()
-
-    @GetMapping(value = "/peers", produces = arrayOf("text/plain"))
-    private fun peers() = proxy.networkMapSnapshot().flatMap { it.legalIdentities }.toString()
-
-    @GetMapping(value = "/notaries", produces = arrayOf("text/plain"))
-    private fun notaries() = proxy.notaryIdentities().toString()
-
-    @GetMapping(value = "/flows", produces = arrayOf("text/plain"))
-    private fun flows() = proxy.registeredFlows().toString()
 
     /** Find All Users. */
     @GetMapping
@@ -182,8 +148,6 @@ class RestController(
     @GetMapping(value = "/{id}")
     fun getById(@PathVariable userId:String) = repository.findById(userId)
 
-
-    private val proxy = rpc.proxy
 
 
     /** Returns a list of existing Messages. */
@@ -246,8 +210,7 @@ class RestController(
 
             HttpStatus.CREATED to mapOf<String, String>(
                     "message" to "$message",
-                    "to" to "$to",
-                    "transactionId" to "${result.tx.id}"
+                    "to" to "$to"
                     )
 
         } catch (e: Exception) {
@@ -257,8 +220,7 @@ class RestController(
         }
         return ResponseEntity<Any?>(message, status)
     }
-
-
+    /*
 
     /** Send UPI Payment */
 
@@ -346,4 +308,6 @@ fun sendPolicy(@RequestParam("alice") alice: String,
     logger.info(message)
     return ResponseEntity<Any?>(message, status)
 }
+
+*/
 }

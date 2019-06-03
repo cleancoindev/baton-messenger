@@ -1,3 +1,14 @@
+
+configurations {
+    // Fix spring-corda shared classpath conflicts during integration testing.
+    testCompile {
+        exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+        exclude group: "org.apache.logging.log4j", module: "log4j-to-slf4j"
+        exclude module: "logback-classic"
+    }
+}
+
+
 apply plugin: 'kotlin-spring'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
@@ -69,17 +80,10 @@ dependencies {
 
 
 springBoot {
+    buildInfo()
     mainClassName = "io.baton.webserver.Application"
 }
 
-task runTemplateClient(type: JavaExec, dependsOn: assemble) {
-    classpath = sourceSets.main.runtimeClasspath
-    main = 'io.baton.ClientKt'
-    args 'localhost:10006', 'user1', 'test'
-}
-
-task runTemplateServer(type: JavaExec, dependsOn: assemble) {
-    classpath = sourceSets.main.runtimeClasspath
-    main = 'io.baton.webserver.ServerKt'
-    args '--server.port=10050', '--config.rpc.host=localhost', '--config.rpc.port=10006', '--config.rpc.username=user1', '--config.rpc.password=test'
+jar {
+    enabled = false
 }

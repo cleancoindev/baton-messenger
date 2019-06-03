@@ -17,14 +17,14 @@ class BatonService(
         private val logger = LoggerFactory.getLogger(CordaNodeServiceImpl::class.java)
     }
     /** Send a Chat! */
-    fun sendChat(to: String, message: String): SignedTransaction {
+    fun sendChat(to: String, message: String): Unit {
         val proxy = this.nodeRpcConnection.proxy
-        // Look-up the 'target'.
+
         val matches = proxy.partiesFromName(to, exactMatch = true)
         logger.debug("sendChat, peers: {}", this.peers())
         logger.debug("sendChat, peer names: {}", this.peerNames())
         logger.debug("sendChat, target: {}, matches: {}", to, matches)
-        // We only want one result!
+
         val to: Party = when {
             matches.isEmpty() -> throw IllegalArgumentException("Target string \"$to\" doesn't match any nodes on the network.")
             matches.size > 1 -> throw IllegalArgumentException("Target string \"$to\"  matches multiple nodes on the network.")

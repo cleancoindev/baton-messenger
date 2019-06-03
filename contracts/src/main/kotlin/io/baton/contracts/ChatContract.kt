@@ -28,8 +28,10 @@ class Chat : Contract {
     @CordaSerializable
     data class Message(val messageId: UniqueIdentifier,
                        val message: String,
+                      // val fromUserId: User,
                        val to: Party,
                        val from: Party,
+                     //  val toUserId: User,
                        val sentReceipt: Boolean?,
                        val deliveredReceipt: Boolean?,
                        val fromMe: Boolean?,
@@ -54,7 +56,6 @@ class Chat : Contract {
                           val deliveredReceipt: Boolean?,
                           val fromMe: Boolean?,
                           val time: String?,
-            // val batonId: String,
                           override val participants: List<AbstractParty> = listOf(to, from)) : ContractState
 
     object SendFileCommand : TypeOnlyCommandData()
