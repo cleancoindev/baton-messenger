@@ -3,3 +3,4 @@ rootProject.name = "baton-messenger"
 include 'workflows'
 include 'contracts'
 include 'server'
+include 'clients'
