@@ -134,6 +134,7 @@ task installQuasar(type: Copy) {
 }
 
 
+
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [':server:jar']) {
     directory "./build/nodes"
     node {
