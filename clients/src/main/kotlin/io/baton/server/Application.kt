@@ -12,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan
  */
 // Remove security and error handling
 @SpringBootApplication(exclude = arrayOf(SecurityAutoConfiguration::class, ErrorMvcAutoConfiguration::class))
-@ComponentScan(basePackages = arrayOf("baton", "com.github.manosbatsis.corbeans"))
+@ComponentScan(basePackages = arrayOf("io.baton", "com.github.manosbatsis.corbeans"))
 class Application
 
 
