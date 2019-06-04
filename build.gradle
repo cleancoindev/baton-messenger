@@ -153,7 +153,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [':server:jar']) {
             address("localhost:10006")
             adminAddress("localhost:10046")
         }
-        // Automatically run at least a single, multi-node Spring Boot instance
         webPort 10007
         webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
         //cordapps = []
@@ -166,7 +165,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [':server:jar']) {
             address("localhost:10009")
             adminAddress("localhost:10049")
         }
-        // Uncomment the following two lines to automatically launch a separate Spring Boot server per node
         webPort 10010
         webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
         //cordapps = []
@@ -179,7 +177,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [':server:jar']) {
             address("localhost:10012")
             adminAddress("localhost:10052")
         }
-        // Uncomment the following two lines to automatically launch a separate Spring Boot server per node
         webPort 10013
         webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
         //cordapps = []
@@ -192,7 +189,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [':server:jar']) {
             address("localhost:10015")
             adminAddress("localhost:10055")
         }
-        // Uncomment the following two lines to automatically launch a separate Spring Boot server per node
         webPort 10016
         webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
         //cordapps = []
