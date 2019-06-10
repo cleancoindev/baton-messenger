@@ -43,7 +43,7 @@ import java.time.format.FormatStyle
 
 @InitiatingFlow
 @StartableByRPC
-class SendChat(private val to: Party, private val message: String) : FlowLogic<Unit>() {
+class SendMessage(private val to: Party, private val userId: String, private val body: String) : FlowLogic<Unit>() {
 
     companion object {
         object GENERATING_TRANSACTION : ProgressTracker.Step("Generating transaction based on new IOU.")
@@ -80,18 +80,20 @@ class SendChat(private val to: Party, private val message: String) : FlowLogic<U
         val notary = serviceHub.networkMapCache.notaryIdentities.first()
         val txb = TransactionBuilder(notary)
         val me = ourIdentityAndCert.party
+        val fromUserId = 21039231.toString()
         val sent = true
         val delivered = false
         val fromMe = true
         val time = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
         val formatted = time.format(formatter)
-        txb.addOutputState(Chat.Message(UniqueIdentifier(), message, to, me, sent, delivered, fromMe, formatted), Chat::class.qualifiedName!!)
+        val messageNumber = 100.toString()
+        txb.addOutputState(Chat.Message(UniqueIdentifier(), body, fromUserId, to, me, userId, sent, delivered, fromMe, formatted, messageNumber), Chat::class.qualifiedName!!)
         txb.addCommand(Chat.SendChatCommand, me.owningKey)
         return serviceHub.signInitialTransaction(txb)
     }
 
-    @InitiatedBy(SendChat::class)
+    @InitiatedBy(SendMessage::class)
     class SendChatResponder(val otherPartySession: FlowSession) : FlowLogic<SignedTransaction>() {
         @Suspendable
         override fun call(): SignedTransaction {

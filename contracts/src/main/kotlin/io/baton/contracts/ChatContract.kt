@@ -26,16 +26,17 @@ import java.security.PublicKey
 
 class Chat : Contract {
     @CordaSerializable
-    data class Message(val messageId: UniqueIdentifier,
-                       val message: String,
-                      // val fromUserId: User,
+    data class Message(val id: UniqueIdentifier,
+                       val body: String,
+                       val fromUserId: String,
                        val to: Party,
                        val from: Party,
-                     //  val toUserId: User,
+                       val toUserId: String,
                        val sentReceipt: Boolean?,
                        val deliveredReceipt: Boolean?,
                        val fromMe: Boolean?,
                        val time: String?,
+                       val messageNumber: String,
                        override val participants: List<AbstractParty> = listOf(to, from)) : ContractState
 
     object SendChatCommand : TypeOnlyCommandData()

@@ -100,8 +100,8 @@ class RestController(
 
     private fun Chat.Message.toJson(): Map<String, String> {
         return kotlin.collections.mapOf(
-                "messageId" to messageId.toString(),
-                "message" to message,
+                "id" to id.toString(),
+                "body" to body,
                 "to" to to.name.organisation,
                 "from" to from.name.organisation,
                 "sentReceipt" to sentReceipt.toString(),
@@ -154,6 +154,9 @@ class RestController(
     }
 
 
+    /** Get Messages by UserId */
+
+
     /** Returns a list of received Messages. */
 
 
@@ -181,11 +184,14 @@ class RestController(
 
 
 
-    @PostMapping(value = "/sendChat")
+    @PostMapping(value = "/sendMessage")
     @ApiOperation(value = "Send a message to the target party")
     fun sendChat(@PathVariable nodeName: Optional<String>,
                  @ApiParam(value = "The target party for the message")
                  @RequestParam(required = true) to: String,
+                 @ApiParam(value = "The user Id for the message")
+                 @RequestParam(required = true) userId: String,
+                 @ApiParam(value = "The message text")
                  @RequestParam("message") message: String): ResponseEntity<Any?> {
 
         if (message == null) {
@@ -196,13 +202,19 @@ class RestController(
             return ResponseEntity.status(TSResponse.BAD_REQUEST).body("Query parameter 'recipient' missing or has wrong format.\n")
         }
 
+        if (userId == null) {
+            return ResponseEntity.status(TSResponse.BAD_REQUEST).body("Query parameter 'userId' missing or has wrong format.\n")
+        }
+
+
         val (status, message) = try {
 
-            val result = getService(nodeName).sendChat(to, message)
+            val result = getService(nodeName).sendMessage(to, userId, message)
 
             HttpStatus.CREATED to mapOf<String, String>(
                     "message" to "$message",
-                    "to" to "$to"
+                    "to" to "$to",
+                    "userId" to "$userId"
                     )
 
         } catch (e: Exception) {

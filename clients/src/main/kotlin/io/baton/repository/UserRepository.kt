@@ -24,4 +24,6 @@ interface UserRepository : CrudRepository<User, String> {
     fun findAll(userName: String): User?
 
     fun findByUsername(username: String): User?
+
+    fun findByUserId(userId: String): User?
 }
