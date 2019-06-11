@@ -89,7 +89,7 @@ class SendMessage(private val to: Party, private val userId: String, private val
         val formatted = time.format(formatter)
         val messageNumber = 100.toString()
         txb.addOutputState(Chat.Message(UniqueIdentifier(), body, fromUserId, to, me, userId, sent, delivered, fromMe, formatted, messageNumber), Chat::class.qualifiedName!!)
-        txb.addCommand(Chat.SendChatCommand, me.owningKey)
+        txb.addCommand(Chat.SendMessageCommand, me.owningKey)
         return serviceHub.signInitialTransaction(txb)
     }
 

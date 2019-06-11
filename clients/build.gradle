@@ -80,7 +80,6 @@ dependencies {
 
 
 springBoot {
-    buildInfo()
     mainClassName = "io.baton.server.ApplicationKt"
 }
 

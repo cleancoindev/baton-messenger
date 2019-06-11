@@ -44,10 +44,10 @@ class Chat : Contract {
                        val messageNumber: String,
                        override val participants: List<AbstractParty> = listOf(to, from)) : ContractState
 
-    object SendChatCommand : TypeOnlyCommandData()
+    object SendMessageCommand : TypeOnlyCommandData()
 
     override fun verify(tx: LedgerTransaction) {
-        val signers: List<PublicKey> = tx.commandsOfType<SendChatCommand>().single().signers
+        val signers: List<PublicKey> = tx.commandsOfType<SendMessageCommand>().single().signers
         val message: Message = tx.outputsOfType<Message>().single()
         requireThat {
             "the chat message is signed by the claimed sender" using (message.from.owningKey in signers)
