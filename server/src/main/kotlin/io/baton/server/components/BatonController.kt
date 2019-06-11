@@ -18,8 +18,6 @@
 package io.baton.server.components
 
 import io.baton.contracts.Chat
-import io.baton.user.User
-import io.baton.user.UserRepository
 import net.corda.core.contracts.ContractState
 import net.corda.core.contracts.StateAndRef
 import net.corda.core.messaging.vaultQueryBy
@@ -40,6 +38,7 @@ import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.User
 import java.util.*
 import javax.annotation.PostConstruct
 
@@ -49,8 +48,7 @@ import javax.annotation.PostConstruct
 
 @RestController
 @RequestMapping("/api")
-class RestController(
-        val repository: UserRepository) {
+class RestController() {
 
 
     val authorization = SecurityContextHolder.getContext().authentication
@@ -110,35 +108,6 @@ class RestController(
                 "time" to time.toString())
     }
 
-    /** Find All Users. */
-    @GetMapping
-    fun findAll() = repository.findAll()
-
-
-    /** Add a new User */
-
-    @PostMapping
-    fun addUser(@RequestBody user: User) = repository.save(user)
-
-
-    /** Update a User */
-
-    @PutMapping(value = "/{id}")
-    fun updateUser(@PathVariable userId: String, @RequestBody user: User) {
-        assert(user.userId == userId)
-        repository.save(user)
-    }
-
-    /** Remove User */
-
-    @DeleteMapping(value = "/{id}")
-    fun removeUser(@PathVariable userId: String) = repository.deleteById(userId)
-
-
-    /** Get User by Id */
-
-    @GetMapping(value = "/{id}")
-    fun getById(@PathVariable userId:String) = repository.findById(userId)
 
 
 
@@ -155,6 +124,15 @@ class RestController(
 
 
     /** Get Messages by UserId */
+
+    @GetMapping(value = "/getMessagesByUserId", produces = arrayOf("application/json"))
+    @ApiOperation(value = "Get Baton Messages by UserId")
+    fun getMessagesByUserId(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
+        val messageStateAndRefs = this.getService(nodeName).proxy().vaultQueryBy<Chat.Message>().states
+        val messageStates = messageStateAndRefs.map { it.state.data }
+        return messageStates.map { it.toJson() }
+    }
+
 
 
     /** Returns a list of received Messages. */
@@ -215,7 +193,7 @@ class RestController(
                     "message" to "$message",
                     "to" to "$to",
                     "userId" to "$userId"
-                    )
+            )
 
         } catch (e: Exception) {
             logger.error("Error sending message to ${to}", e)

@@ -16,5 +16,7 @@ fun main(args: Array<String>) {
     driver(DriverParameters(startNodesInProcess = true, waitForAllNodesToFinish = true)) {
         startNode(providedName = CordaX500Name("PartyA", "London", "GB"), rpcUsers = rpcUsers).getOrThrow()
         startNode(providedName = CordaX500Name("PartyB", "New York", "US"), rpcUsers = rpcUsers).getOrThrow()
+        startNode(providedName = CordaX500Name("PartyC", "San Francisco", "US"), rpcUsers = rpcUsers).getOrThrow()
+        startNode(providedName = CordaX500Name("PartyD", "Barcelona", "ES"), rpcUsers = rpcUsers).getOrThrow()
     }
 }

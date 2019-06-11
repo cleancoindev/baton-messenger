@@ -135,7 +135,7 @@ task installQuasar(type: Copy) {
 
 
 
-task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [':clients:jar']) {
+task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [':server:jar']) {
     directory "./build/nodes"
     node {
         name "O=Notary,L=London,C=GB"
@@ -154,8 +154,9 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [':clients:jar']) 
             address("localhost:10006")
             adminAddress("localhost:10046")
         }
+        // Automatically run at least a single, multi-node Spring Boot instance
         webPort 10007
-        webserverJar = "${rootProject.projectDir}/server/build/libs/server-0.1.jar"
+        webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
         //cordapps = []
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
     }
@@ -166,32 +167,9 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: [':clients:jar']) 
             address("localhost:10009")
             adminAddress("localhost:10049")
         }
-        webPort 10010
-        webserverJar = "${rootProject.projectDir}/server/build/libs/server-0.1.jar"
-        //cordapps = []
-        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
-    }
-    node {
-        name "O=PartyC,L=San Francisco,C=US"
-        p2pPort 10011
-        rpcSettings {
-            address("localhost:10012")
-            adminAddress("localhost:10052")
-        }
-        webPort 10013
-        webserverJar = "${rootProject.projectDir}/server/build/libs/server-0.1.jar"
-        //cordapps = []
-        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
-    }
-    node {
-        name "O=PartyD,L=Barcelona,C=ES"
-        p2pPort 10014
-        rpcSettings {
-            address("localhost:10015")
-            adminAddress("localhost:10055")
-        }
-        webPort 10016
-        webserverJar = "${rootProject.projectDir}/server/build/libs/server-0.1.jar"
+        // Uncomment the following two lines to automatically launch a separate Spring Boot webserver per node
+        //webPort 10010
+        //webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
         //cordapps = []
         rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
     }

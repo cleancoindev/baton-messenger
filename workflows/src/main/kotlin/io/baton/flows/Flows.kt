@@ -115,7 +115,7 @@ class SendMessage(private val to: Party, private val userId: String, private val
 
 @InitiatingFlow
 @StartableByRPC
-class SendFile(private val to: Party, private val attachment: String) : FlowLogic<Unit>() {
+class SendFile(private val to: Party, private val userId: String, private val attachment: String) : FlowLogic<Unit>() {
 
     companion object {
         object GENERATING_TRANSACTION : ProgressTracker.Step("Generating transaction based on new IOU.")
