@@ -64,21 +64,21 @@ class MessageStateServiceIntegrationTest {
         val messageStateVaultObservable = messageStateService.track().updates
         messageStateVaultObservable.subscribe { update ->
             update.produced.forEach { (state) ->
-                batonUpdates.add(state.data)
+                messageUpdates.add(state.data)
             }
         }
         // Send a Yo!
-        this.restTemplate.getForObject("/api/yo/partyB/yo?target=partyA", Map::class.java)
+        this.restTemplate.getForObject("/api/sendMessage/partyB/message?to=partyA", Map::class.java)
         // Give some time to the async tracking process
         Thread.sleep(1000);
-        var batonStates = batonStateService.query()
+        var batonStates = messageStateService.query()
         val batonCount = batonStates.states.size
         Assertions.assertTrue(batonCount > 0)
         // Send a second Yo!
-        this.restTemplate.getForObject("/api/yo/partyB/yo?target=partyA", Map::class.java)
+        this.restTemplate.getForObject("/api/sendMessage/partyB/message?to=partyA", Map::class.java)
         // Give some time to the async tracking process
         Thread.sleep(1000);
-        batonStates = batonStateService.query()
+        batonStates = messageStateService.query()
         // New query should return "previous count + 1" results
         Assertions.assertEquals(batonCount + 1, batonStates.states.size)
     }

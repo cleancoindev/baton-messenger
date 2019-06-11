@@ -19,11 +19,12 @@
  * 	specific language governing permissions and limitations
  * 	under the License.
  */
+
+
 package io.baton.server
 
 import com.github.manosbatsis.corbeans.test.integration.WithDriverNodesIT
 import io.baton.server.components.BatonService
-import io.baton.server.components.YoService
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.junit.jupiter.api.Assertions
@@ -79,11 +80,11 @@ class BatonWithDriverNodesIntegrationTest : WithDriverNodesIT() {
     }
 
     @Test
-    fun `Can send Yo!`() {
+    fun `Can send Message!`() {
         withDriverNodes {
-            logger.info("Can send Yo!")
-            val yoResponse = this.restTemplate.getForObject("/api/yo/partyA/yo?target=partyB", Map::class.java)
-            logger.debug("Yo response: {}", yoResponse)
+            logger.info("Can send Message!")
+            val yoResponse = this.restTemplate.getForObject("/api/sendMessage/partyA/yo?target=partyB", Map::class.java)
+            logger.debug("Message response: {}", yoResponse)
             Assertions.assertTrue(yoResponse.keys.contains("message"))
         }
     }

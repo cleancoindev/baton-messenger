@@ -20,28 +20,24 @@ buildscript {
         springfox_version = '2.9.2'
         partiture_version = '0.5'
     }
-
     // Customise dependency versions for spring-boot-dependencies
     ext['artemis.version'] = "$artemis_version"
     ext['hibernate.version'] = "$hibernate_version"
     ext['jackson.version'] = "$jackson_version"
 
-
     repositories {
         mavenLocal()
         mavenCentral()
         jcenter()
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda' }
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-solutions-releases' }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
+
     }
-
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "net.corda.plugins:cordapp:$corda_gradle_plugins_version"
-        classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:publish-utils:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_gradle_plugin_version"
-
+        classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:cordapp:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:api-scanner:$corda_gradle_plugins_version"
 
         // spring plugins
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
@@ -52,6 +48,10 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlin_version"
     }
+}
+
+plugins {
+    id "com.github.hierynomus.license" version "0.14.0"
 }
 
 allprojects {
@@ -66,6 +66,9 @@ allprojects {
         //Needed only for SNAPSHOT versions
         maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
     }
+
+    version = "0.19-SNAPSHOT"
+    group = 'io.baton'
 }
 subprojects {
     apply plugin: 'license'
