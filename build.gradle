@@ -73,7 +73,6 @@ allprojects {
     group = 'io.baton'
 }
 subprojects {
-    apply plugin: 'license'
     apply plugin: 'kotlin'
     apply plugin: 'maven'
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
@@ -130,12 +129,4 @@ subprojects {
         }
     }
 
-    license {
-        header rootProject.file("${rootProject.rootDir}/etc/license/header-asl.txt")
-        includes(["**/*.java", "**/*.kt"])
-        mapping {
-            kt='SLASHSTAR_STYLE'
-        }
-        strictCheck true
-    }
 }
