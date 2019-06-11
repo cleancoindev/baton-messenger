@@ -20,9 +20,14 @@ import net.corda.core.contracts.*
 import net.corda.core.contracts.Requirements.using
 import net.corda.core.identity.AbstractParty
 import net.corda.core.identity.Party
+import net.corda.core.schemas.MappedSchema
+import net.corda.core.schemas.PersistentState
 import net.corda.core.serialization.CordaSerializable
 import net.corda.core.transactions.LedgerTransaction
 import java.security.PublicKey
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.Table
 
 class Chat : Contract {
     @CordaSerializable
@@ -48,6 +53,49 @@ class Chat : Contract {
             "the chat message is signed by the claimed sender" using (message.from.owningKey in signers)
         }
     }
+
+   // override fun supportedSchemas() = listOf(ChatSchemaV1)
+
+
+    object ChatSchema
+
+    object ChatSchemaV1 : MappedSchema(ChatSchema.javaClass, 1, listOf(PersistentMessages::class.java)) {
+        @Entity
+        @Table(name = "messages")
+        class PersistentMessages(
+                @Column(name = "id")
+                var id: String = "",
+                @Column(name = "body")
+                var body: String = "",
+                @Column(name = "fromUserId")
+                var fromUserId: String = "",
+                @Column(name = "to")
+                var to: String = "",
+                @Column(name = "from")
+                var from: String = "",
+                @Column(name = "toUserId")
+                var toUserId: String = "",
+                @Column(name = "sentReceipt")
+                var sentReceipt: String = "",
+                @Column(name = "deliveredReceipt")
+                var deliveredReceipt: String = "",
+                @Column(name = "fromMe")
+                var fromMe: String = "",
+                @Column(name = "time")
+                var time: String = "",
+                @Column(name = "messageNumber")
+                var messageNumber: String = ""
+        ) : PersistentState()
+    }
+
+
+
+
+
+
+
+
+
 
     data class Attachment(val attachmentId: UniqueIdentifier,
                           val attachment: String,
