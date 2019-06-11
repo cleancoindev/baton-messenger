@@ -15,7 +15,7 @@ cordapp {
 
 dependencies {
 
-    cordapp project(":cordapp-contract")
+    cordapp project(":contracts")
     // Corda deps
     cordaCompile "$corda_release_group:corda-core:$corda_release_version"
     cordaCompile "$corda_release_group:corda-jackson:$corda_release_version"
