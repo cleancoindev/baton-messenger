@@ -56,4 +56,10 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test:$spring_boot_version")
     testCompile ("$corda_release_group:corda-node-driver:$corda_release_version")
 
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+
 }

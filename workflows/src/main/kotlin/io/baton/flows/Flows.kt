@@ -46,7 +46,7 @@ import java.time.format.FormatStyle
 class SendMessage(private val to: Party, private val userId: String, private val body: String) : FlowLogic<Unit>() {
 
     companion object {
-        object GENERATING_TRANSACTION : ProgressTracker.Step("Generating transaction based on new IOU.")
+        object GENERATING_TRANSACTION : ProgressTracker.Step("Generating transaction based on new Message.")
         object VERIFYING_TRANSACTION : ProgressTracker.Step("Verifying contract constraints.")
         object SIGNING_TRANSACTION : ProgressTracker.Step("Signing transaction with our private key.")
         object GATHERING_SIGS : ProgressTracker.Step("Gathering the counterparty's signature.") {
