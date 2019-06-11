@@ -22,7 +22,10 @@
 package io.baton.server
 
 import com.github.manosbatsis.corbeans.test.integration.WithDriverNodesIT
+import io.baton.server.components.BatonService
 import io.baton.server.components.YoService
+import org.assertj.core.api.Assertions
+import org.junit.Test
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -33,6 +36,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -44,24 +48,24 @@ import kotlin.test.assertTrue
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension::class)
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-class YoWithDriverNodesIntegrationTest : WithDriverNodesIT() {
+class BatonWithDriverNodesIntegrationTest : WithDriverNodesIT() {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(YoWithDriverNodesIntegrationTest::class.java)
+        private val logger = LoggerFactory.getLogger(BatonWithDriverNodesIntegrationTest::class.java)
 
     }
 
     // autowire all created services, mapped by name
     @Autowired
-    lateinit var services: Map<String, YoService>
+    lateinit var services: Map<String, BatonService>
 
     // autowire the same services individually
     @Autowired
     @Qualifier("partyANodeService")
-    lateinit var partyAService: YoService
+    lateinit var partyAService: BatonService
     @Autowired
     @Qualifier("partyBNodeService")
-    lateinit var partyBService: YoService
+    lateinit var partyBService: BatonService
 
     @Autowired
     lateinit var restTemplate: TestRestTemplate

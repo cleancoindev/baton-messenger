@@ -55,8 +55,8 @@ class SwaggerConfig {
     }
 
     protected fun apiInfo(): ApiInfo {
-        return ApiInfoBuilder().title("Corbeans Yo!")
-                .description("A rest API for Yo! cordapp nodes using Spring Boot 2").version("0.1").build()
+        return ApiInfoBuilder().title("Baton Messenger!")
+                .description("A rest API for Baton Messenger nodes using Spring Boot 2").version("0.1").build()
     }
 
 }

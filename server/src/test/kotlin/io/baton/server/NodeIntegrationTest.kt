@@ -22,9 +22,11 @@
 package io.baton.server
 
 import com.github.manosbatsis.corbeans.test.integration.WithImplicitNetworkIT
-import io.baton.server.components.YoService
+import io.baton.server.components.BatonService
 import net.corda.core.identity.Party
 import net.corda.core.utilities.NetworkHostAndPort
+import org.assertj.core.api.Assertions
+import org.junit.Test
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -35,6 +37,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
@@ -51,15 +54,15 @@ class NodeIntegrationTest : WithImplicitNetworkIT() {
 
     // autowire all created services, mapped by name
     @Autowired
-    lateinit var services: Map<String, YoService>
+    lateinit var services: Map<String, BatonService>
 
     // autowire the same services individually
     @Autowired
     @Qualifier("partyANodeService")
-    lateinit var partyAService: YoService
+    lateinit var partyAService: BatonService
     @Autowired
     @Qualifier("partyBNodeService")
-    lateinit var partyBService: YoService
+    lateinit var partyBService: BatonService
 
     @Autowired
     lateinit var restTemplate: TestRestTemplate

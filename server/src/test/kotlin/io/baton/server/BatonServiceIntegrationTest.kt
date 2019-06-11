@@ -23,7 +23,9 @@ package io.baton.server
 
 import com.github.manosbatsis.corbeans.spring.boot.corda.service.CordaNetworkService
 import com.github.manosbatsis.corbeans.test.integration.CorbeansSpringExtension
-import mypackage.cordapp.contract.YoContract
+import io.baton.contracts.Chat
+import org.assertj.core.api.Assertions
+import org.junit.Test
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -56,29 +58,29 @@ class MessageStateServiceIntegrationTest {
     fun `Can use state service to query and track states`() {
         // Get a state service
         val messageStateService = networkService.getNodeService("partyA")
-                .createStateService(ChatContract.Message::class.java)
+                .createStateService(Chat.Message::class.java)
         // Observe and count Yo! updates
-        val messageUpdates = mutableListOf<ChatContract.Message>()
+        val messageUpdates = mutableListOf<Chat.Message>()
         val messageStateVaultObservable = messageStateService.track().updates
         messageStateVaultObservable.subscribe { update ->
             update.produced.forEach { (state) ->
-                yoUpdates.add(state.data)
+                batonUpdates.add(state.data)
             }
         }
         // Send a Yo!
         this.restTemplate.getForObject("/api/yo/partyB/yo?target=partyA", Map::class.java)
         // Give some time to the async tracking process
         Thread.sleep(1000);
-        var yoStates = yoStateService.query()
-        val yoCount = yoStates.states.size
-        Assertions.assertTrue(yoCount > 0)
+        var batonStates = batonStateService.query()
+        val batonCount = batonStates.states.size
+        Assertions.assertTrue(batonCount > 0)
         // Send a second Yo!
         this.restTemplate.getForObject("/api/yo/partyB/yo?target=partyA", Map::class.java)
         // Give some time to the async tracking process
         Thread.sleep(1000);
-        yoStates = yoStateService.query()
+        batonStates = batonStateService.query()
         // New query should return "previous count + 1" results
-        Assertions.assertEquals(yoCount + 1, yoStates.states.size)
+        Assertions.assertEquals(batonCount + 1, batonStates.states.size)
     }
 
 
