@@ -31,6 +31,8 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:$spring_boot_version")
     //compile "org.apache.logging.log4j:log4j-web:2.7"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
+
+    compile 'org.springframework.security.oauth:spring-security-oauth2:2.0.12.RELEASE'
     // Corda
     compile "net.corda:corda-core:$corda_release_version"
     compile "net.corda:corda-jackson:$corda_release_version"

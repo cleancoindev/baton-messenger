@@ -33,6 +33,8 @@ class User(
         var lastName: String = "",
         var email: String = "",
         var title: String = "",
+        var state: String = "",
+        var status: String = "",
         var organization: String = ""
 
 )

@@ -41,11 +41,20 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.User
 import java.util.*
 import javax.annotation.PostConstruct
+import org.springframework.security.oauth2.client.OAuth2ClientContext
+import org.springframework.security.oauth2.client.OAuth2RestTemplate
+import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails
+import org.springframework.security.oauth2.provider.OAuth2Authentication
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.CrossOrigin
+
+
 
 /**
  * Baton Messenger API Endpoints
  */
 
+@CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network"])
 @RestController
 @RequestMapping("/api")
 class RestController() {
@@ -117,9 +126,10 @@ class RestController() {
     // @RequestBody user: User) = repository.save(user)
 
 
+
     /** Returns a list of existing Messages. */
 
-
+    @CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network"])
     @GetMapping(value = "/getMessages", produces = arrayOf("application/json"))
     @ApiOperation(value = "Get Baton Messages")
     fun getMessages(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
@@ -131,8 +141,9 @@ class RestController() {
 
     /** Get Messages by UserId */
 
-    @GetMapping(value = "/getMessagesByUserId", produces = arrayOf("application/json"))
-    @ApiOperation(value = "Get Baton Messages by UserId")
+    @CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network"])
+    @GetMapping(value = "/getMessages/userId", produces = arrayOf("application/json"))
+    @ApiOperation(value = "Get Baton Messages by userId")
     fun getMessagesByUserId(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
         val messageStateAndRefs = this.getService(nodeName).proxy().vaultQueryBy<Chat.Message>().states
         val messageStates = messageStateAndRefs.map { it.state.data }
@@ -143,7 +154,7 @@ class RestController() {
 
     /** Returns a list of received Messages. */
 
-
+    @CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network"])
     @GetMapping(value = "/getReceivedMessages", produces = arrayOf("application/json"))
     @ApiOperation(value = "Get Received Baton Messages")
     fun getRecievedMessages(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
@@ -154,7 +165,7 @@ class RestController() {
 
     /** Returns a list of Sent Messages. */
 
-
+    @CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network"])
     @GetMapping(value = "/getSentMessages", produces = arrayOf("application/json"))
     @ApiOperation(value = "Get Sent Baton Messages")
     fun getSentMessages(@PathVariable nodeName: Optional<String>): List<Map<String, String>> {
@@ -167,7 +178,7 @@ class RestController() {
     /** Send Chat */
 
 
-
+    @CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network"])
     @PostMapping(value = "/sendMessage")
     @ApiOperation(value = "Send a message to the target party")
     fun sendChat(@PathVariable nodeName: Optional<String>,
@@ -212,7 +223,7 @@ class RestController() {
 
     /** Send UPI Payment */
 
-
+    @CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network"])
     @PostMapping(value = "/pay")
     fun sendPayment(@RequestParam("pa") pa: String,
                     @RequestParam("pn") pn: String,
@@ -258,7 +269,7 @@ class RestController() {
 
 /** Send Proxy Re-encryption Policy */
 
-
+@CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network"])
 @PostMapping(value = "/policy")
 fun sendPolicy(@RequestParam("alice") alice: String,
                 @RequestParam("enrico") enrico: String,

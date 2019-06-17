@@ -15,6 +15,7 @@
  */
 
 package io.baton.dao
+
 import org.springframework.stereotype.Component
 import io.baton.user.User
 import io.baton.user.UserRepository
@@ -33,6 +34,8 @@ class UserDao(
                    lastName: String,
                    email: String,
                    title: String,
+                   state: String,
+                   status: String,
                    organization: String) =
-            userRepository.save(User(userId = userId, orgId = orgId, username = userName, firstName = firstName, lastName = lastName, email = email, title = title, organization = organization))
+            userRepository.save(User(userId = userId, orgId = orgId, username = userName, firstName = firstName, lastName = lastName, email = email, title = title, state = state, status = status, organization = organization))
 }

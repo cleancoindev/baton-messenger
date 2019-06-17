@@ -25,6 +25,7 @@ sourceSets {
 dependencies {
     // Corda dependencies.
     compile "$corda_release_group:corda-rpc:$corda_release_version"
+    compile 'org.springframework.security.oauth:spring-security-oauth2:2.0.12.RELEASE'
 
 
     // CorDapp dependencies.
