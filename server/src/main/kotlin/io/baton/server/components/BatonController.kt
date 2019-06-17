@@ -108,7 +108,13 @@ class RestController() {
                 "time" to time.toString())
     }
 
+    // /** Add a new User */
 
+    //@PostMapping(value = "/addUser", produces = arrayOf("application/json"))
+    //@ApiOperation(value = "Add new Baton User")
+   // fun addUser(@PathVariable nodeName: Optional<String>,
+    // @ApiParam(value = "The User")
+    // @RequestBody user: User) = repository.save(user)
 
 
     /** Returns a list of existing Messages. */
@@ -170,10 +176,10 @@ class RestController() {
                  @ApiParam(value = "The user Id for the message")
                  @RequestParam(required = true) userId: String,
                  @ApiParam(value = "The message text")
-                 @RequestParam("message") message: String): ResponseEntity<Any?> {
+                 @RequestParam("body") body: String): ResponseEntity<Any?> {
 
-        if (message == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Query parameter 'message' can not be null.\n")
+        if (body== null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Query parameter 'body' can not be null.\n")
         }
 
         if (to == null) {
@@ -187,10 +193,10 @@ class RestController() {
 
         val (status, message) = try {
 
-            val result = getService(nodeName).sendMessage(to, userId, message)
+            val result = getService(nodeName).sendMessage(to, userId, body)
 
             HttpStatus.CREATED to mapOf<String, String>(
-                    "message" to "$message",
+                    "body" to "$body",
                     "to" to "$to",
                     "userId" to "$userId"
             )

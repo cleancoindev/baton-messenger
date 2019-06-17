@@ -26,6 +26,13 @@ class UserDao(
     fun getUserById(userId: String) =
             userRepository.findById(userId)
 
-    fun createUser(userId: String) =
-            userRepository.save(User(userId = userId))
+    fun createUser(userId: String,
+                   orgId: String,
+                   userName: String,
+                   firstName: String,
+                   lastName: String,
+                   email: String,
+                   title: String,
+                   organization: String) =
+            userRepository.save(User(userId = userId, orgId = orgId, username = userName, firstName = firstName, lastName = lastName, email = email, title = title, organization = organization))
 }
