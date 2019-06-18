@@ -61,4 +61,22 @@ public class Force {
 
     private static class QueryResultUser extends QueryResult<User> {}
 
+
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class UserProvAccount {
+        public String Status;
+        public String LinkState;
+        public String DeletedDate;
+        public String ExternalEmail;
+        public String ConnectedAppId;
+        public String ExternalUserId;
+        public String ExternalLastName;
+        public String ExternalUsername;
+        public String SalesforceUserId;
+        public String ExternalFirstName;
+
+    }
+
+
 }
