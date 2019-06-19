@@ -55,7 +55,7 @@ class SwaggerConfig {
     }
 
     protected fun apiInfo(): ApiInfo {
-        return ApiInfoBuilder().title("Baton Messenger!")
+        return ApiInfoBuilder().title("Baton Messenger")
                 .description("A rest API for Baton Messenger nodes using Spring Boot 2").version("0.1").build()
     }
 
