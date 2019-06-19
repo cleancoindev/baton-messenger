@@ -9,7 +9,6 @@ configurations {
 }
 apply plugin: 'kotlin-spring'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'net.corda.plugins.quasar-utils'
 
 springBoot {
     buildInfo()
