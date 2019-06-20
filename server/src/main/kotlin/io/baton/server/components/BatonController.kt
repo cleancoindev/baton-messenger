@@ -81,7 +81,7 @@ class RestController() {
     }
 
     /**
-     * Handle both "api/sendChat" and "api/sendChat/{nodeName}" by using `cordform` as the default
+     * Handle both "api/sendMessage" and "api/message/{nodeName}" by using `cordform` as the default
      * node name to support optional dedicated server per node when using `runnodes`.
      */
     fun getService(optionalNodeName: Optional<String>): BatonService {
@@ -116,15 +116,6 @@ class RestController() {
                 "fromMe" to fromMe.toString(),
                 "time" to time.toString())
     }
-
-    // /** Add a new User */
-
-    //@PostMapping(value = "/addUser", produces = arrayOf("application/json"))
-    //@ApiOperation(value = "Add new Baton User")
-   // fun addUser(@PathVariable nodeName: Optional<String>,
-    // @ApiParam(value = "The User")
-    // @RequestBody user: User) = repository.save(user)
-
 
 
     /** Returns a list of existing Messages. */

@@ -242,7 +242,7 @@
 <script type="text/javascript">
 
 
-    var NODE_URL = 'http://localhost:10050/api/';
+    var NODE_URL = 'http://localhost:8080/api/';
     console.log(NODE_URL);
 
 
@@ -379,7 +379,7 @@
       $scope.loadingAgreements = true;
       var getAgreementsPromise = httpInstance.get(
             {
-                url: 'http://localhost:10050/api/getAgreements',
+                url: 'http://localhost:8080/api/getAgreements',
                 dataType: 'json',
                 method: 'GET'
             }
@@ -407,7 +407,7 @@
 	  $scope.loadingMe = true;
         var getMePromise = httpInstance.get(
             {
-                url: 'http://localhost:10050/api/me',
+                url: 'http://localhost:8080/api/me',
                 dataType: 'json',
                 method: 'GET'
             }
@@ -430,7 +430,7 @@
 	  $scope.loadingMessage = true;
         var getMessagePromise = httpInstance.get(
             {
-                url: 'http://localhost:10050/api/getMessages',
+                url: 'http://localhost:8080/api/getMessages',
                 dataType: 'json',
                 method: 'GET'
             }
@@ -453,7 +453,7 @@
 	  $scope.loadingPeers = true;
         var getPeersPromise = httpInstance.get(
             {
-                url: 'http://localhost:10050/api/peers',
+                url: 'http://localhost:8080/api/peers',
                 dataType: 'json',
                 method: 'GET'
             }
@@ -476,7 +476,7 @@
         $scope.showTransferSpinner = true;
         var createMessagePromise = httpInstance.post(
         {
-            url: 'http://localhost:10050/api/sendChat?to=' + $scope.to + '&message=' + $scope.message,
+            url: 'http://localhost:8080/api/sendChat?to=' + $scope.to + '&message=' + $scope.message,
             dataType: 'json',
             method: 'POST'
         }
@@ -519,7 +519,7 @@
 
        var createAgreementPromise = httpInstance.post(
            {
-               url: 'http://localhost:10050/api/createAgreement?agreementNumber=' + $scope.agreementNumber + '&agreementName=' + $scope.agreementName + '&agreementStatus=' + $scope.agreementStatus + '&agreementType=' + $scope.agreementType + '&totalAgreementValue=' + $scope.totalAgreementValue + '&counterpartyName=' + $scope.counterpartyName + '&agreementHash=' + $scope.agreementHash,
+               url: 'http://localhost:8080/api/createAgreement?agreementNumber=' + $scope.agreementNumber + '&agreementName=' + $scope.agreementName + '&agreementStatus=' + $scope.agreementStatus + '&agreementType=' + $scope.agreementType + '&totalAgreementValue=' + $scope.totalAgreementValue + '&counterpartyName=' + $scope.counterpartyName + '&agreementHash=' + $scope.agreementHash,
                dataType: 'json',
                method: 'POST'
            }
@@ -551,7 +551,7 @@
 
        var activateAgreementPromise = httpInstance.post(
            {
-               url: 'http://localhost:10050/api/activateAgreement?agreementNumber=' + $scope.agreementNumber,
+               url: 'http://localhost:8080/api/activateAgreement?agreementNumber=' + $scope.agreementNumber,
                dataType: 'json',
                method: 'POST'
            }
@@ -581,7 +581,7 @@
 
        var amendAgreementPromise = httpInstance.post(
            {
-               url: 'http://localhost:10050/api/amendAgreement?agreementNumber=' + $scope.agreementNumber,
+               url: 'http://localhost:8080/api/amendAgreement?agreementNumber=' + $scope.agreementNumber,
                dataType: 'json',
                method: 'POST'
            }
@@ -611,7 +611,7 @@
 
        var terminateAgreementPromise = httpInstance.post(
            {
-               url: 'http://localhost:10050/api/terminateAgreement?agreementNumber=' + $scope.agreementNumber,
+               url: 'http://localhost:8080/api/terminateAgreement?agreementNumber=' + $scope.agreementNumber,
                dataType: 'json',
                method: 'POST'
            }
