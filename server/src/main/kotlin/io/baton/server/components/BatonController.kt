@@ -56,11 +56,8 @@ import org.springframework.web.bind.annotation.CrossOrigin
 
 @CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network"])
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/{nodeName}")
 class RestController() {
-
-
-    val authorization = SecurityContextHolder.getContext().authentication
 
     companion object {
         private val logger = LoggerFactory.getLogger(RestController::class.java)
@@ -166,13 +163,13 @@ class RestController() {
     }
 
 
-    /** Send Chat */
+    /** Send Message*/
 
 
     @CrossOrigin(origins = ["https://dapps.ngrok.io", "https://dsoa.network"])
     @PostMapping(value = "/sendMessage")
     @ApiOperation(value = "Send a message to the target party")
-    fun sendChat(@PathVariable nodeName: Optional<String>,
+    fun sendMessage(@PathVariable nodeName: Optional<String>,
                  @ApiParam(value = "The target party for the message")
                  @RequestParam(required = true) to: String,
                  @ApiParam(value = "The user Id for the message")
