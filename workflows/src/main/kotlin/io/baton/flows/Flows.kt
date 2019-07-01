@@ -97,15 +97,18 @@ class SendMessage(private val to: Party, private val userId: String, private val
     class SendChatResponder(val otherPartySession: FlowSession) : FlowLogic<SignedTransaction>() {
         @Suspendable
         override fun call(): SignedTransaction {
-            val signTransactionFlow = object : SignTransactionFlow(otherPartySession) {
-                override fun checkTransaction(stx: SignedTransaction) = requireThat {
-                    val output = stx.tx.outputs.single().data
-
+            val stx = subFlow(object : SignTransactionFlow(otherPartySession) {
+                override fun checkTransaction(stx: SignedTransaction) {
+                    val message = stx.coreTransaction.outputsOfType<Chat.Message>().single()
+                    require(message.from != ourIdentity) {
+                        "The sender of the new message cannot have my identity when I am not the creator of the transaction"
+                    }
+                    require(message.from == otherPartySession.counterparty) {
+                        "The sender of the reply must must be the party creating this transaction"
+                    }
                 }
-            }
-
-            val signedTransaction = subFlow(signTransactionFlow)
-            return subFlow(ReceiveFinalityFlow(otherSideSession = otherPartySession, expectedTxId = signedTransaction.id))
+            })
+            return subFlow(ReceiveFinalityFlow(otherSideSession = otherPartySession, expectedTxId = stx.id))
         }
     }
 
