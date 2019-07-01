@@ -25,6 +25,7 @@ bootJar {
 dependencies {
     // Our cordapp bits
     compile project(":workflows")
+    compile project(":contracts")
     // Spring Boot
     compile("org.springframework.boot:spring-boot-starter:$spring_boot_version")
     compile("org.springframework.boot:spring-boot-starter-web:$spring_boot_version")
