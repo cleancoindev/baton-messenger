@@ -12,6 +12,7 @@ buildscript {
         jackson_version = '2.9.5'
         jcabi_manifests_version = '1.1'
         junitVersion = '5.1.1'
+        junit_version = '5.1.1'
         kotlin_version = '1.2.71'
         kotlinx_coroutines_version = '0.30.2'
         quasar_version = '0.7.10'
@@ -21,19 +22,22 @@ buildscript {
         partiture_version = '0.5'
         slf4j_version = '1.7.25'
         log4j_version = '2.11.2'
+        tokens_release_version = '1.0'
+        tokens_release_group = 'com.r3.corda.lib.tokens'
+        accounts_release_group = 'com.r3.corda.lib.accounts'
+        accounts_release_version = '1.0-RC01'
+
     }
-    // Customise dependency versions for spring-boot-dependencies
-    ext['artemis.version'] = "$artemis_version"
-    ext['hibernate.version'] = "$hibernate_version"
-    ext['jackson.version'] = "$jackson_version"
 
     repositories {
         mavenLocal()
         mavenCentral()
         jcenter()
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
-
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda' }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib' }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib-dev' }
     }
+
     dependencies {
         classpath "net.corda.plugins:publish-utils:$corda_gradle_plugins_version"
         classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
@@ -52,81 +56,169 @@ buildscript {
     }
 }
 
-plugins {
-    id "com.github.hierynomus.license" version "0.14.0"
-}
-
 allprojects {
+    apply plugin: 'kotlin'
+
     repositories {
         mavenLocal()
         jcenter()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
         maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases' }
-        //Needed only for Corda SNAPSHOT versions
-        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-dev/' }
-        //Needed only for SNAPSHOT versions
-        maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url 'https://jitpack.io' }
     }
 
-    version = "0.19-SNAPSHOT"
-    group = 'io.baton'
-}
-subprojects {
-    apply plugin: 'kotlin'
-    apply plugin: 'maven'
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
         kotlinOptions {
             languageVersion = "1.2"
             apiVersion = "1.2"
             jvmTarget = "1.8"
-            freeCompilerArgs = ["-Xjsr305=strict"]
             javaParameters = true   // Useful for reflection.
         }
     }
-    test {
-        useJUnitPlatform {
-            includeEngines 'junit-jupiter'
-            testLogging {
-                events "passed", "skipped", "failed", "standardOut", "standardError"
-            }
-            exclude '**/*IntegrationTest.class'
+
+    jar {
+        // This makes the JAR's SHA-256 hash repeatable.
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+    }
+}
+
+apply plugin: 'net.corda.plugins.cordapp'
+apply plugin: 'net.corda.plugins.cordformation'
+apply plugin: 'net.corda.plugins.quasar-utils'
+
+sourceSets {
+    main {
+        resources {
+            srcDir rootProject.file("config/dev")
         }
     }
-    // Run integration tests using junit5
-    task integrationTest(type: Test) {
-        useJUnitPlatform {
-            includeEngines 'junit-jupiter'
-            testLogging {
-                events "passed", "skipped", "failed", "standardOut", "standardError"
-            }
-            include '**/*IntegrationTest.class'
+}
 
+dependencies {
+    // Kotlin.
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
+    // Corda dependencies.
+    cordaCompile "$corda_release_group:corda-core:$corda_release_version"
+    cordaCompile "$corda_release_group:corda-node-api:$corda_release_version"
+    cordaRuntime "$corda_release_group:corda:$corda_release_version"
+
+    // CorDapp dependencies.
+    cordapp project(":workflows")
+    cordapp project(":contracts")
+
+    // Token SDK dependencies.
+    // cordapp "$tokens_release_group:tokens-contracts:$tokens_release_version"
+    // cordapp "$tokens_release_group:tokens-workflows:$tokens_release_version"
+    // cordapp "$tokens_release_group:tokens-money:$tokens_release_version"
+
+    // For logging.
+    cordaCompile "org.apache.logging.log4j:log4j-slf4j-impl:${log4j_version}"
+    cordaCompile "org.apache.logging.log4j:log4j-web:${log4j_version}"
+    cordaCompile "org.slf4j:jul-to-slf4j:$slf4j_version"
+}
+
+cordapp {
+    info {
+        name "Baton Messenger"
+        vendor "Dapps Incorporated"
+        targetPlatformVersion corda_platform_version.toInteger()
+        minimumPlatformVersion corda_platform_version.toInteger()
+    }
+}
+
+
+task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
+    directory "./build/nodes"
+    nodeDefaults {
+        projectCordapp {
+            deploy = false
         }
+        cordapp project(':contracts')
+        cordapp project(":workflows")
     }
-    dependencies {
-        compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-        compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-
-        testCompile("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
-
-        testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
-        testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-
-        testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junitVersion"
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-    }
-    // convenient report on all dependencies
-    task allDeps(type: DependencyReportTask) {}
-
-    configurations {
-        all {
-            // Exclude old Junit since we use jupiter
-            //exclude group: 'junit', module: 'junit'
-            // Stop deprecation warnings since we use stdlib-jdkX
-            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre8'
-            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre7'
+    node {
+        name "O=Notary,L=London,C=GB"
+        notary = [validating : true]
+        p2pPort 10002
+        rpcSettings {
+            address("localhost:10003")
+            adminAddress("localhost:10043")
         }
+        //cordapps = []
+        extraConfig = ['h2Settings.address' : 'localhost:12344']
     }
+    node {
+        name "O=PartyA,L=London,C=GB"
+        p2pPort 10005
+        rpcSettings {
+            address("localhost:10006")
+            adminAddress("localhost:10046")
+        }
+        cordapps = []
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
+        //     extraConfig = [
+        //     dataSourceProperties : [
+        //         dataSourceClassName : "org.postgresql.ds.PGSimpleDataSource",
+        //         'dataSource.url' : System.getenv("POSTGRES_DATABASE_URL") ?: "default_value"
+        //     ],
 
+        //      database: [
+        //          transactionIsolationLevel : "READ_COMMITTED"
+        //       ]
+        //               ]
+        //       // Automatically run at least a single, multi-node Spring Boot instance
+        webPort 8080
+        extraConfig = ['h2Settings.address' : 'localhost:12347']
+        webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
+    }
+    node {
+        name "O=PartyB,L=New York,C=US"
+        p2pPort 10008
+        rpcSettings {
+            address("localhost:10009")
+            adminAddress("localhost:10049")
+        }
+        // Uncomment the following two lines to automatically launch a separate Spring Boot webserver per node
+        //webPort 10010
+        //webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
+        //cordapps = []
+        //    extraConfig = [
+        //            dataSourceProperties : [
+        //                    dataSourceClassName : "org.postgresql.ds.PGSimpleDataSource",
+        //                    'dataSource.url' : "postgresql://postgres:b6e5a72a9a7da6246546289eb9eb09c1@backend-c4j2k58t.nhost.io:5701/postgres?sslmode=require" // var envVar: String = System.getenv("varname") ?: "default_value"
+        //           ],
+        //
+        //            database: [
+        //                    transactionIsolationLevel : "READ_COMMITTED"
+        //           ]
+        //    ]
+        extraConfig = ['h2Settings.address' : 'localhost:12345']
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
+    }
+    node {
+        name "O=PartyC,L=San Francisco,C=US"
+        p2pPort 10011
+        rpcSettings {
+            address("localhost:10012")
+            adminAddress("localhost:10052")
+        }
+        // Uncomment the following two lines to automatically launch a separate Spring Boot webserver per node
+        //webPort 10010
+        //webserverJar = "${rootProject.projectDir}/server/build/libs/server-${project.version}.jar"
+        //cordapps = []
+        //   extraConfig = [
+        ///            dataSourceProperties : [
+        //                    dataSourceClassName : "org.postgresql.ds.PGSimpleDataSource",
+        //                    'dataSource.url' : "postgresql://postgres:c4f6eedf6959f7b4c06228388e718f40@backend-6gds2aun.nhost.io:5702/postgres?sslmode=require" // var envVar: String = System.getenv("varname") ?: "default_value"
+        //            ],
+        //
+        //            database: [
+        //                   transactionIsolationLevel : "READ_COMMITTED"
+        //            ]
+        //    ]
+        extraConfig = ['h2Settings.address' : 'localhost:12346']
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
+    }
 }

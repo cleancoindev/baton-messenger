@@ -103,7 +103,7 @@ class Chat : Contract {
 
 
 
-
+    @CordaSerializable
     data class Attachment(val attachmentId: UniqueIdentifier,
                           val attachment: String,
                           val to: Party,
