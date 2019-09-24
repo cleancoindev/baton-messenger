@@ -115,7 +115,7 @@ Message States are transferred between stakeholders on the network.
 
 #### Messages
 
-The first state to be deployed on the network is the `Account`. Version 0.1 of the `Account` State has the following structure:
+The first state to be deployed on the network is the `Message`. Version 0.1 of the `Message` State has the following structure:
 
 ```jsx
 
