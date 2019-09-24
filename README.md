@@ -1,6 +1,6 @@
 # Baton Messenger - Kotlin
 
-Baton Messenger - Corda 4.0
+Baton Messenger is B2B messenger for inter-firm collaboration and process automation.
 
 ```
 	   8 Node Network Graph | 28 Edges | 1 Notary
