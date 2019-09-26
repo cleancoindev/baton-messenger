@@ -1,6 +1,6 @@
 # Baton Messenger - Kotlin
 
-Baton Messenger is B2B messenger for inter-firm collaboration and process automation.
+Baton Messenger is B2B messenger for inter-firm collaboration and process automation. Baton is an open source CorDapp, built on Corda.
 
 ```
 	   8 Node Network Graph | 28 Edges | 1 Notary
